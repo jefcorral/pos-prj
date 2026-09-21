@@ -12,7 +12,14 @@ export type User = {
 
 export type Auth = {
     user: User;
+    permissions: string[];
 };
+
+export type ActiveShift = {
+    id: number;
+    opening_cash: string;
+    opened_at: string;
+} | null;
 
 export type Passkey = {
     id: number;
