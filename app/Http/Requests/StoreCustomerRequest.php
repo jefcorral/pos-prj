@@ -12,6 +12,7 @@ class StoreCustomerRequest extends FormRequest
         return $this->user()->can('customers.manage');
     }
 
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
         return [

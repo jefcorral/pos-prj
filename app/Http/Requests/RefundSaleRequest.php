@@ -11,6 +11,7 @@ class RefundSaleRequest extends FormRequest
         return $this->user()->can('sales.refund');
     }
 
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
         return [

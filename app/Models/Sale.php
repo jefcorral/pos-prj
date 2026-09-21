@@ -53,41 +53,49 @@ class Sale extends Model
         return 'S-'.now()->format('Ymd').'-'.str_pad((string) $count, 5, '0', STR_PAD_LEFT);
     }
 
+    /** @return HasMany<SaleItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(SaleItem::class);
     }
 
+    /** @return HasMany<Payment, $this> */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
+    /** @return HasMany<Refund, $this> */
     public function refunds(): HasMany
     {
         return $this->hasMany(Refund::class);
     }
 
+    /** @return HasOne<Receipt, $this> */
     public function receipt(): HasOne
     {
         return $this->hasOne(Receipt::class);
     }
 
+    /** @return BelongsTo<Customer, $this> */
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function cashier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /** @return BelongsTo<CashierShift, $this> */
     public function shift(): BelongsTo
     {
         return $this->belongsTo(CashierShift::class, 'cashier_shift_id');
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);

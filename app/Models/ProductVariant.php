@@ -22,6 +22,7 @@ class ProductVariant extends Model
         'is_active' => 'boolean',
     ];
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

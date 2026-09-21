@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class BranchController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('branches.manage'), 403);
 
@@ -18,7 +20,7 @@ class BranchController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         abort_unless($request->user()->can('branches.manage'), 403);
 
@@ -34,7 +36,7 @@ class BranchController extends Controller
         return back()->with('success', 'Branch created.');
     }
 
-    public function update(Request $request, Branch $branch)
+    public function update(Request $request, Branch $branch): RedirectResponse
     {
         abort_unless($request->user()->can('branches.manage'), 403);
         abort_if($branch->company_id !== $request->user()->company_id, 404);

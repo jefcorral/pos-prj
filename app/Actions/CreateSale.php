@@ -7,6 +7,7 @@ use App\Enums\InventoryMovementType;
 use App\Enums\PaymentMethod;
 use App\Enums\SaleStatus;
 use App\Models\CashMovement;
+use App\Models\ProductVariant;
 use App\Models\Sale;
 use App\Models\User;
 use App\Services\InventoryService;
@@ -23,19 +24,21 @@ class CreateSale
     ) {}
 
     /**
-     * @param  array{items: array, payments: array, discount?: array|null, customer_id?: int|null, held_sale_id?: int|null, note?: string|null}  $data
+     * @param  array<string, mixed>  $data
      */
     public function handle(array $data, User $cashier, int $branchId): Sale
     {
         return DB::transaction(function () use ($data, $cashier, $branchId) {
-            $priced = $this->pricing->priceCart($data['items'], $data['discount'] ?? null);
+            $items = is_array($data['items'] ?? null) ? $data['items'] : [];
+            $discount = is_array($data['discount'] ?? null) ? $data['discount'] : null;
+            $priced = $this->pricing->priceCart($items, $discount);
 
             if (empty($priced['items'])) {
                 throw ValidationException::withMessages(['items' => 'The cart is empty.']);
             }
 
             $total = $priced['total'];
-            $payments = $data['payments'] ?? [];
+            $payments = is_array($data['payments'] ?? null) ? $data['payments'] : [];
             $paidTotal = round(collect($payments)->sum('amount'), 2);
 
             if ($paidTotal + 0.0001 < $total) {
@@ -77,7 +80,7 @@ class CreateSale
                     'product_id' => $line['product']->id,
                     'product_variant_id' => $line['variant']?->id,
                     'name' => $line['product']->name.($line['variant'] ? " ({$line['variant']->name})" : ''),
-                    'sku' => $line['variant']?->sku ?? $line['product']->sku,
+                    'sku' => $line['variant'] instanceof ProductVariant ? ($line['variant']->sku ?? $line['product']->sku) : $line['product']->sku,
                     'quantity' => $line['quantity'],
                     'unit_price' => $line['unit_price'],
                     'unit_cost' => $line['unit_cost'],

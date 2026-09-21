@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomerRequest;
 use App\Models\Customer;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('customers.manage'), 403);
 
@@ -28,14 +30,14 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function store(StoreCustomerRequest $request)
+    public function store(StoreCustomerRequest $request): RedirectResponse
     {
         Customer::create($request->validated() + ['company_id' => $request->user()->company_id]);
 
         return back()->with('success', 'Customer created.');
     }
 
-    public function update(StoreCustomerRequest $request, Customer $customer)
+    public function update(StoreCustomerRequest $request, Customer $customer): RedirectResponse
     {
         abort_if($customer->company_id !== $request->user()->company_id, 404);
         $customer->update($request->validated());
@@ -43,7 +45,7 @@ class CustomerController extends Controller
         return back()->with('success', 'Customer updated.');
     }
 
-    public function destroy(Request $request, Customer $customer)
+    public function destroy(Request $request, Customer $customer): RedirectResponse
     {
         abort_if($customer->company_id !== $request->user()->company_id, 404);
         $customer->delete();

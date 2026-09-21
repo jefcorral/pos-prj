@@ -23,16 +23,19 @@ class SaleItem extends Model
         'total' => 'decimal:2',
     ];
 
+    /** @return BelongsTo<Sale, $this> */
     public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
     }
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /** @return BelongsTo<ProductVariant, $this> */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');

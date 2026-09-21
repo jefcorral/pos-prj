@@ -22,11 +22,13 @@ class CashMovement extends Model
         'created_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<CashierShift, $this> */
     public function shift(): BelongsTo
     {
         return $this->belongsTo(CashierShift::class, 'cashier_shift_id');
     }
 
+    /** @return MorphTo<Model, $this> */
     public function reference(): MorphTo
     {
         return $this->morphTo();

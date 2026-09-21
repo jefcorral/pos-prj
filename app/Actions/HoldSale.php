@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Enums\SaleStatus;
+use App\Models\ProductVariant;
 use App\Models\Sale;
 use App\Models\User;
 use App\Services\PricingService;
@@ -14,10 +15,15 @@ class HoldSale
 {
     public function __construct(private PricingService $pricing) {}
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function handle(array $data, User $cashier, int $branchId): Sale
     {
         return DB::transaction(function () use ($data, $cashier, $branchId) {
-            $priced = $this->pricing->priceCart($data['items'], $data['discount'] ?? null);
+            $items = is_array($data['items'] ?? null) ? $data['items'] : [];
+            $discount = is_array($data['discount'] ?? null) ? $data['discount'] : null;
+            $priced = $this->pricing->priceCart($items, $discount);
 
             if (empty($priced['items'])) {
                 throw ValidationException::withMessages(['items' => 'The cart is empty.']);
@@ -51,7 +57,7 @@ class HoldSale
                     'product_id' => $line['product']->id,
                     'product_variant_id' => $line['variant']?->id,
                     'name' => $line['product']->name.($line['variant'] ? " ({$line['variant']->name})" : ''),
-                    'sku' => $line['variant']?->sku ?? $line['product']->sku,
+                    'sku' => $line['variant'] instanceof ProductVariant ? ($line['variant']->sku ?? $line['product']->sku) : $line['product']->sku,
                     'quantity' => $line['quantity'],
                     'unit_price' => $line['unit_price'],
                     'unit_cost' => $line['unit_cost'],

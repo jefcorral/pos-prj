@@ -9,13 +9,15 @@ use App\Models\Product;
 use App\Models\PurchaseOrder;
 use App\Models\Supplier;
 use App\Support\AuditLogger;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PurchaseOrderController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('purchases.manage'), 403);
 
@@ -33,7 +35,7 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function create(Request $request)
+    public function create(Request $request): Response
     {
         abort_unless($request->user()->can('purchases.manage'), 403);
         $companyId = $request->user()->company_id;
@@ -45,7 +47,7 @@ class PurchaseOrderController extends Controller
         ]);
     }
 
-    public function store(StorePurchaseOrderRequest $request)
+    public function store(StorePurchaseOrderRequest $request): RedirectResponse
     {
         $po = DB::transaction(function () use ($request) {
             $po = PurchaseOrder::create([
@@ -77,7 +79,7 @@ class PurchaseOrderController extends Controller
         return redirect()->route('purchase-orders.show', $po)->with('success', "PO {$po->reference_no} created.");
     }
 
-    public function show(Request $request, PurchaseOrder $purchaseOrder)
+    public function show(Request $request, PurchaseOrder $purchaseOrder): Response
     {
         abort_unless($request->user()->can('purchases.manage'), 403);
         abort_if($purchaseOrder->company_id !== $request->user()->company_id, 404);
@@ -87,7 +89,7 @@ class PurchaseOrderController extends Controller
         return Inertia::render('purchases/Show', ['order' => $purchaseOrder]);
     }
 
-    public function update(Request $request, PurchaseOrder $purchaseOrder)
+    public function update(Request $request, PurchaseOrder $purchaseOrder): RedirectResponse
     {
         abort_if($purchaseOrder->company_id !== $request->user()->company_id, 404);
         abort_unless($request->user()->can('purchases.manage'), 403);
@@ -102,7 +104,7 @@ class PurchaseOrderController extends Controller
         return back()->with('success', 'PO updated.');
     }
 
-    public function receive(ReceiveGoodsRequest $request, PurchaseOrder $purchaseOrder, ReceiveGoods $action)
+    public function receive(ReceiveGoodsRequest $request, PurchaseOrder $purchaseOrder, ReceiveGoods $action): RedirectResponse
     {
         abort_if($purchaseOrder->company_id !== $request->user()->company_id, 404);
 

@@ -48,7 +48,8 @@ watch([search, categoryId], () => {
         index.url(),
         {
             search: search.value || undefined,
-            category_id: categoryId.value !== 'all' ? categoryId.value : undefined,
+            category_id:
+                categoryId.value !== 'all' ? categoryId.value : undefined,
         },
         { preserveState: true, replace: true },
     );
@@ -68,27 +69,42 @@ function remove(id: number) {
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-bold">Products</h1>
                 <Button v-if="can('products.create')" as-child>
-                    <Link :href="create()"><Plus class="mr-1 h-4 w-4" />New Product</Link>
+                    <Link :href="create()"
+                        ><Plus class="mr-1 h-4 w-4" />New Product</Link
+                    >
                 </Button>
             </div>
 
             <div class="flex gap-3">
                 <div class="relative w-72">
-                    <Search class="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
-                    <Input v-model="search" placeholder="Search name, SKU, barcode…" class="pl-9" />
+                    <Search
+                        class="text-muted-foreground absolute top-2.5 left-3 h-4 w-4"
+                    />
+                    <Input
+                        v-model="search"
+                        placeholder="Search name, SKU, barcode…"
+                        class="pl-9"
+                    />
                 </div>
                 <Select v-model="categoryId">
-                    <SelectTrigger class="w-48"><SelectValue placeholder="All categories" /></SelectTrigger>
+                    <SelectTrigger class="w-48"
+                        ><SelectValue placeholder="All categories"
+                    /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All categories</SelectItem>
-                        <SelectItem v-for="c in categories" :key="c.id" :value="String(c.id)">{{ c.name }}</SelectItem>
+                        <SelectItem
+                            v-for="c in categories"
+                            :key="c.id"
+                            :value="String(c.id)"
+                            >{{ c.name }}</SelectItem
+                        >
                     </SelectContent>
                 </Select>
             </div>
 
             <div class="rounded-lg border">
                 <table class="w-full text-sm">
-                    <thead class="border-b bg-muted/50 text-left">
+                    <thead class="bg-muted/50 border-b text-left">
                         <tr>
                             <th class="p-3">Product</th>
                             <th class="p-3">SKU</th>
@@ -101,40 +117,82 @@ function remove(id: number) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="p in products.data" :key="p.id" class="border-b last:border-0">
+                        <tr
+                            v-for="p in products.data"
+                            :key="p.id"
+                            class="border-b last:border-0"
+                        >
                             <td class="p-3 font-medium">
                                 {{ p.name }}
-                                <span v-if="p.variants.length" class="text-xs text-muted-foreground">
+                                <span
+                                    v-if="p.variants.length"
+                                    class="text-muted-foreground text-xs"
+                                >
                                     · {{ p.variants.length }} variants
                                 </span>
                             </td>
-                            <td class="p-3 text-muted-foreground">{{ p.sku }}</td>
+                            <td class="text-muted-foreground p-3">
+                                {{ p.sku }}
+                            </td>
                             <td class="p-3">{{ p.category?.name ?? '—' }}</td>
                             <td class="p-3">{{ p.brand?.name ?? '—' }}</td>
-                            <td class="p-3 text-right">{{ format(p.selling_price) }}</td>
                             <td class="p-3 text-right">
-                                <span :class="Number(p.inventories_sum_quantity ?? 0) <= p.low_stock_threshold ? 'font-semibold text-destructive' : ''">
+                                {{ format(p.selling_price) }}
+                            </td>
+                            <td class="p-3 text-right">
+                                <span
+                                    :class="
+                                        Number(
+                                            p.inventories_sum_quantity ?? 0,
+                                        ) <= p.low_stock_threshold
+                                            ? 'text-destructive font-semibold'
+                                            : ''
+                                    "
+                                >
                                     {{ p.inventories_sum_quantity ?? 0 }}
                                 </span>
                             </td>
                             <td class="p-3">
-                                <Badge :variant="p.is_active ? 'secondary' : 'outline'">
+                                <Badge
+                                    :variant="
+                                        p.is_active ? 'secondary' : 'outline'
+                                    "
+                                >
                                     {{ p.is_active ? 'Active' : 'Inactive' }}
                                 </Badge>
                             </td>
                             <td class="p-3">
                                 <div class="flex justify-end gap-1">
-                                    <Button v-if="can('products.update')" size="icon" variant="ghost" as-child>
-                                        <Link :href="edit.url(p.id)"><Pencil class="h-4 w-4" /></Link>
+                                    <Button
+                                        v-if="can('products.update')"
+                                        size="icon"
+                                        variant="ghost"
+                                        as-child
+                                    >
+                                        <Link :href="edit.url(p.id)"
+                                            ><Pencil class="h-4 w-4"
+                                        /></Link>
                                     </Button>
-                                    <Button v-if="can('products.delete')" size="icon" variant="ghost" @click="remove(p.id)">
-                                        <Trash2 class="h-4 w-4 text-destructive" />
+                                    <Button
+                                        v-if="can('products.delete')"
+                                        size="icon"
+                                        variant="ghost"
+                                        @click="remove(p.id)"
+                                    >
+                                        <Trash2
+                                            class="text-destructive h-4 w-4"
+                                        />
                                     </Button>
                                 </div>
                             </td>
                         </tr>
                         <tr v-if="!products.data.length">
-                            <td colspan="8" class="p-8 text-center text-muted-foreground">No products found.</td>
+                            <td
+                                colspan="8"
+                                class="text-muted-foreground p-8 text-center"
+                            >
+                                No products found.
+                            </td>
                         </tr>
                     </tbody>
                 </table>

@@ -11,6 +11,7 @@ class GoodsReceiptItem extends Model
 
     protected $casts = ['quantity' => 'decimal:3'];
 
+    /** @return BelongsTo<PurchaseOrderItem, $this> */
     public function purchaseOrderItem(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrderItem::class);

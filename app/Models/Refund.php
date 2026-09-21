@@ -12,11 +12,13 @@ class Refund extends Model
 
     protected $casts = ['amount' => 'decimal:2'];
 
+    /** @return BelongsTo<Sale, $this> */
     public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);
     }
 
+    /** @return HasMany<RefundItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(RefundItem::class);

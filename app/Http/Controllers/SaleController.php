@@ -7,13 +7,16 @@ use App\Actions\VoidSale;
 use App\Enums\SaleStatus;
 use App\Http\Requests\RefundSaleRequest;
 use App\Models\Sale;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class SaleController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('sales.view'), 403);
         $user = $request->user();
@@ -37,7 +40,7 @@ class SaleController extends Controller
         ]);
     }
 
-    public function show(Request $request, Sale $sale)
+    public function show(Request $request, Sale $sale): Response
     {
         abort_unless($request->user()->can('sales.view'), 403);
         abort_if($sale->company_id !== $request->user()->company_id, 404);
@@ -61,7 +64,7 @@ class SaleController extends Controller
         ]);
     }
 
-    public function receipt(Request $request, Sale $sale)
+    public function receipt(Request $request, Sale $sale): JsonResponse
     {
         abort_if($sale->company_id !== $request->user()->company_id, 404);
 
@@ -73,7 +76,7 @@ class SaleController extends Controller
         return response()->json($receipt);
     }
 
-    public function void(Request $request, Sale $sale, VoidSale $action)
+    public function void(Request $request, Sale $sale, VoidSale $action): RedirectResponse
     {
         abort_unless($request->user()->can('sales.void'), 403);
         abort_if($sale->company_id !== $request->user()->company_id, 404);
@@ -85,7 +88,7 @@ class SaleController extends Controller
         return back()->with('success', "Sale {$sale->number} voided.");
     }
 
-    public function refund(RefundSaleRequest $request, Sale $sale, RefundSale $action)
+    public function refund(RefundSaleRequest $request, Sale $sale, RefundSale $action): RedirectResponse
     {
         abort_if($sale->company_id !== $request->user()->company_id, 404);
 
@@ -103,7 +106,7 @@ class SaleController extends Controller
     /**
      * Discard a held sale (no stock/payment was recorded, so no reversal needed).
      */
-    public function destroyHeld(Request $request, Sale $sale)
+    public function destroyHeld(Request $request, Sale $sale): RedirectResponse
     {
         abort_unless($request->user()->can('pos.use'), 403);
 

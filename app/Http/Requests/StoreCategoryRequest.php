@@ -11,6 +11,7 @@ class StoreCategoryRequest extends FormRequest
         return $this->user()->can('catalog.manage');
     }
 
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
         return [

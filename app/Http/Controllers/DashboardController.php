@@ -8,10 +8,11 @@ use App\Models\Sale;
 use App\Models\SaleItem;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): Response
     {
         $user = $request->user();
         $branchId = $user->branch_id;

@@ -38,16 +38,19 @@ class User extends Authenticatable implements PasskeyUser
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, HasRoles, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
+    /** @return BelongsTo<Company, $this> */
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return HasMany<CashierShift, $this> */
     public function shifts(): HasMany
     {
         return $this->hasMany(CashierShift::class);

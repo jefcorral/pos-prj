@@ -71,15 +71,27 @@ const statusVariant = (s: string) =>
 
             <div class="flex flex-wrap gap-3">
                 <div class="relative w-64">
-                    <Search class="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
-                    <Input v-model="search" placeholder="Sale #…" class="pl-9" />
+                    <Search
+                        class="text-muted-foreground absolute top-2.5 left-3 h-4 w-4"
+                    />
+                    <Input
+                        v-model="search"
+                        placeholder="Sale #…"
+                        class="pl-9"
+                    />
                 </div>
                 <Select v-model="status">
                     <SelectTrigger class="w-44"><SelectValue /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All statuses</SelectItem>
                         <SelectItem
-                            v-for="s in ['completed', 'held', 'voided', 'refunded', 'partially_refunded']"
+                            v-for="s in [
+                                'completed',
+                                'held',
+                                'voided',
+                                'refunded',
+                                'partially_refunded',
+                            ]"
                             :key="s"
                             :value="s"
                             >{{ s.replace('_', ' ') }}</SelectItem
@@ -92,7 +104,7 @@ const statusVariant = (s: string) =>
 
             <div class="rounded-lg border">
                 <table class="w-full text-sm">
-                    <thead class="border-b bg-muted/50 text-left">
+                    <thead class="bg-muted/50 border-b text-left">
                         <tr>
                             <th class="p-3">Sale #</th>
                             <th class="p-3">Date</th>
@@ -105,30 +117,58 @@ const statusVariant = (s: string) =>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="s in sales.data" :key="s.id" class="border-b last:border-0">
-                            <td class="p-3 font-mono font-medium">{{ s.number }}</td>
-                            <td class="p-3 text-muted-foreground">
-                                {{ new Date(s.completed_at ?? s.created_at).toLocaleString() }}
+                        <tr
+                            v-for="s in sales.data"
+                            :key="s.id"
+                            class="border-b last:border-0"
+                        >
+                            <td class="p-3 font-mono font-medium">
+                                {{ s.number }}
+                            </td>
+                            <td class="text-muted-foreground p-3">
+                                {{
+                                    new Date(
+                                        s.completed_at ?? s.created_at,
+                                    ).toLocaleString()
+                                }}
                             </td>
                             <td class="p-3">{{ s.cashier?.name ?? '—' }}</td>
-                            <td class="p-3">{{ s.customer?.name ?? 'Walk-in' }}</td>
                             <td class="p-3">
-                                <Badge v-for="(p, i) in s.payments" :key="i" variant="outline" class="mr-1 uppercase">
+                                {{ s.customer?.name ?? 'Walk-in' }}
+                            </td>
+                            <td class="p-3">
+                                <Badge
+                                    v-for="(p, i) in s.payments"
+                                    :key="i"
+                                    variant="outline"
+                                    class="mr-1 uppercase"
+                                >
                                     {{ p.method }}
                                 </Badge>
                             </td>
-                            <td class="p-3 text-right font-medium">{{ format(s.total) }}</td>
+                            <td class="p-3 text-right font-medium">
+                                {{ format(s.total) }}
+                            </td>
                             <td class="p-3">
-                                <Badge :variant="statusVariant(s.status)">{{ s.status.replace('_', ' ') }}</Badge>
+                                <Badge :variant="statusVariant(s.status)">{{
+                                    s.status.replace('_', ' ')
+                                }}</Badge>
                             </td>
                             <td class="p-3 text-right">
                                 <Button size="icon" variant="ghost" as-child>
-                                    <Link :href="show.url(s.id)"><Eye class="h-4 w-4" /></Link>
+                                    <Link :href="show.url(s.id)"
+                                        ><Eye class="h-4 w-4"
+                                    /></Link>
                                 </Button>
                             </td>
                         </tr>
                         <tr v-if="!sales.data.length">
-                            <td colspan="8" class="p-8 text-center text-muted-foreground">No sales.</td>
+                            <td
+                                colspan="8"
+                                class="text-muted-foreground p-8 text-center"
+                            >
+                                No sales.
+                            </td>
                         </tr>
                     </tbody>
                 </table>

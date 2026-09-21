@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 class HoldSaleRequest extends CheckoutRequest
 {
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
         $rules = parent::rules();

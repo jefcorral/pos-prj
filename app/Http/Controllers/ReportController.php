@@ -12,10 +12,11 @@ use App\Models\SaleItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ReportController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('reports.view'), 403);
         $user = $request->user();
@@ -34,7 +35,7 @@ class ReportController extends Controller
 
         $salesIds = (clone $salesQuery)->select('id');
 
-        $summary = (clone $salesQuery)->selectRaw('
+        $summary = (clone $salesQuery)->toBase()->selectRaw('
             coalesce(sum(total),0) as gross_sales,
             coalesce(sum(discount_total),0) as discounts,
             coalesce(sum(tax_total),0) as taxes,

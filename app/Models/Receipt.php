@@ -11,6 +11,7 @@ class Receipt extends Model
 
     protected $casts = ['payload' => 'array', 'printed_at' => 'datetime'];
 
+    /** @return BelongsTo<Sale, $this> */
     public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);

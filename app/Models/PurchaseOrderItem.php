@@ -19,16 +19,19 @@ class PurchaseOrderItem extends Model
         'total' => 'decimal:2',
     ];
 
+    /** @return BelongsTo<PurchaseOrder, $this> */
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class);
     }
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /** @return BelongsTo<ProductVariant, $this> */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');

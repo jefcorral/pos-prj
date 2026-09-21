@@ -77,6 +77,6 @@ class InventoryService
             ->where('product_variant_id', $variantId)
             ->first();
 
-        return (float) ($inventory?->quantity ?? 0);
+        return (float) ($inventory === null ? 0 : $inventory->quantity);
     }
 }

@@ -7,12 +7,14 @@ use App\Http\Requests\AdjustStockRequest;
 use App\Models\Inventory;
 use App\Models\InventoryMovement;
 use App\Models\Product;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class InventoryController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('inventory.view'), 403);
         $user = $request->user();
@@ -41,7 +43,7 @@ class InventoryController extends Controller
         ]);
     }
 
-    public function movements(Request $request)
+    public function movements(Request $request): Response
     {
         abort_unless($request->user()->can('inventory.view'), 403);
         $user = $request->user();
@@ -63,10 +65,11 @@ class InventoryController extends Controller
         ]);
     }
 
-    public function adjust(AdjustStockRequest $request, AdjustInventory $action)
+    public function adjust(AdjustStockRequest $request, AdjustInventory $action): RedirectResponse
     {
         $product = Product::where('company_id', $request->user()->company_id)
-            ->findOrFail($request->product_id);
+            ->whereKey($request->product_id)
+            ->firstOrFail();
 
         $action->handle(
             product: $product,

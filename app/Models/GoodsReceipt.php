@@ -12,11 +12,13 @@ class GoodsReceipt extends Model
 
     protected $casts = ['received_at' => 'datetime'];
 
+    /** @return BelongsTo<PurchaseOrder, $this> */
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class);
     }
 
+    /** @return HasMany<GoodsReceiptItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(GoodsReceiptItem::class);

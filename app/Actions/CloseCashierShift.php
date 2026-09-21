@@ -19,7 +19,8 @@ class CloseCashierShift
                 throw ValidationException::withMessages(['shift' => 'This shift is already closed.']);
             }
 
-            $movements = $shift->cashMovements()
+            $movements = DB::table('cash_movements')
+                ->where('cashier_shift_id', $shift->id)
                 ->selectRaw("
                     coalesce(sum(case when type in ('sale','in') then amount else 0 end),0) as inflow,
                     coalesce(sum(case when type in ('refund','out') then amount else 0 end),0) as outflow

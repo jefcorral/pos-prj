@@ -10,13 +10,17 @@ use App\Http\Requests\HoldSaleRequest;
 use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Sale;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PosController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('pos.use'), 403);
 
@@ -40,7 +44,7 @@ class PosController extends Controller
     /**
      * Product search for the POS grid / barcode scanner. Returns JSON.
      */
-    public function products(Request $request)
+    public function products(Request $request): JsonResponse
     {
         abort_unless($request->user()->can('pos.use'), 403);
 
@@ -63,7 +67,7 @@ class PosController extends Controller
             ->orderBy('name')
             ->limit(60)
             ->get()
-            ->map(fn (Product $p) => [
+            ->map(fn (Product $p): array => [
                 'id' => $p->id,
                 'name' => $p->name,
                 'sku' => $p->sku,
@@ -72,9 +76,9 @@ class PosController extends Controller
                 'tax_rate' => $p->tax ? (float) $p->tax->rate : 0,
                 'tax_type' => $p->tax?->type,
                 'image' => $p->image_path ? asset('storage/'.$p->image_path) : null,
-                'stock' => (float) ($p->inventories->first()?->quantity ?? 0),
+                'stock' => (float) data_get($p->inventories->first(), 'quantity', 0),
                 'track_stock' => $p->track_stock,
-                'variants' => $p->variants->map(fn ($v) => [
+                'variants' => $p->variants->map(fn (ProductVariant $v): array => [
                     'id' => $v->id,
                     'name' => $v->name,
                     'sku' => $v->sku,
@@ -86,14 +90,14 @@ class PosController extends Controller
         return response()->json($products);
     }
 
-    public function checkout(CheckoutRequest $request, CreateSale $action)
+    public function checkout(CheckoutRequest $request, CreateSale $action): RedirectResponse
     {
         $sale = $action->handle($request->validated(), $request->user(), $request->user()->branch_id);
 
         return redirect()->route('pos.index')->with('completed_sale', $sale->id);
     }
 
-    public function hold(HoldSaleRequest $request, HoldSale $action)
+    public function hold(HoldSaleRequest $request, HoldSale $action): RedirectResponse
     {
         $sale = $action->handle($request->validated(), $request->user(), $request->user()->branch_id);
 

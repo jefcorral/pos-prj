@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,27 +24,35 @@ class CashierShift extends Model
         'closed_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return HasMany<CashMovement, $this> */
     public function cashMovements(): HasMany
     {
         return $this->hasMany(CashMovement::class);
     }
 
+    /** @return HasMany<Sale, $this> */
     public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
     }
 
-    public function scopeOpen($query)
+    /**
+     * @param  Builder<CashierShift>  $query
+     * @return Builder<CashierShift>
+     */
+    protected function scopeOpen(Builder $query): Builder
     {
         return $query->where('status', 'open');
     }

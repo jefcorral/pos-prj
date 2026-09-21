@@ -10,14 +10,17 @@ use App\Models\Product;
 use App\Models\Tax;
 use App\Models\Unit;
 use App\Support\AuditLogger;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('products.view'), 403);
 
@@ -43,7 +46,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function create(Request $request)
+    public function create(Request $request): Response
     {
         abort_unless($request->user()->can('products.create'), 403);
 
@@ -53,7 +56,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request): RedirectResponse
     {
         $product = DB::transaction(function () use ($request) {
             $data = $request->safe()->except(['image', 'variants']);
@@ -79,7 +82,7 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product created.');
     }
 
-    public function edit(Request $request, Product $product)
+    public function edit(Request $request, Product $product): Response
     {
         abort_unless($request->user()->can('products.update'), 403);
         $this->authorizeCompany($request, $product);
@@ -90,7 +93,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
         $this->authorizeCompany($request, $product);
 
@@ -110,7 +113,7 @@ class ProductController extends Controller
             foreach ($request->validated('variants') ?? [] as $variant) {
                 $variant = $product->variants()->updateOrCreate(
                     ['id' => $variant['id'] ?? null],
-                    collect($variant)->except('id')->all()
+                    Arr::except($variant, 'id')
                 );
                 $keep[] = $variant->id;
             }
@@ -123,7 +126,7 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product updated.');
     }
 
-    public function destroy(Request $request, Product $product)
+    public function destroy(Request $request, Product $product): RedirectResponse
     {
         abort_unless($request->user()->can('products.delete'), 403);
         $this->authorizeCompany($request, $product);
@@ -134,6 +137,7 @@ class ProductController extends Controller
         return back()->with('success', 'Product deleted.');
     }
 
+    /** @return array<string, mixed> */
     private function formOptions(Request $request): array
     {
         $companyId = $request->user()->company_id;

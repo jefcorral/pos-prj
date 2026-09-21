@@ -11,6 +11,7 @@ class CloseShiftRequest extends FormRequest
         return $this->user()->can('pos.use');
     }
 
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
         return [

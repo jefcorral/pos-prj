@@ -25,26 +25,31 @@ class InventoryMovement extends Model
         'created_at' => 'datetime',
     ];
 
+    /** @return BelongsTo<Product, $this> */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /** @return BelongsTo<ProductVariant, $this> */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 
+    /** @return BelongsTo<Branch, $this> */
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
+    /** @return BelongsTo<User, $this> */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /** @return MorphTo<Model, $this> */
     public function reference(): MorphTo
     {
         return $this->morphTo();

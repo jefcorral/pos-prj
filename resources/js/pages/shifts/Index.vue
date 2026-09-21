@@ -40,7 +40,13 @@ const props = defineProps<{
         id: number;
         opening_cash: string;
         opened_at: string;
-        cash_movements: { id: number; type: string; amount: string; reason: string | null; created_at: string }[];
+        cash_movements: {
+            id: number;
+            type: string;
+            amount: string;
+            reason: string | null;
+            created_at: string;
+        }[];
     } | null;
 }>();
 
@@ -69,26 +75,53 @@ const cashDialog = ref(false);
                         <Badge class="ml-2">open</Badge>
                     </CardTitle>
                     <div class="flex gap-2">
-                        <Button v-if="can('shifts.cash')" variant="outline" size="sm" @click="cashDialog = true">
+                        <Button
+                            v-if="can('shifts.cash')"
+                            variant="outline"
+                            size="sm"
+                            @click="cashDialog = true"
+                        >
                             Cash In/Out
                         </Button>
-                        <Button size="sm" variant="destructive" @click="closeDialog = true">
+                        <Button
+                            size="sm"
+                            variant="destructive"
+                            @click="closeDialog = true"
+                        >
                             <Lock class="mr-1 h-4 w-4" />Close Shift
                         </Button>
                     </div>
                 </CardHeader>
                 <CardContent class="text-sm">
                     <div class="mb-3">
-                        Opened {{ new Date(currentShift.opened_at).toLocaleString() }} ·
-                        Opening cash {{ format(currentShift.opening_cash) }}
+                        Opened
+                        {{ new Date(currentShift.opened_at).toLocaleString() }}
+                        · Opening cash {{ format(currentShift.opening_cash) }}
                     </div>
                     <table class="w-full">
                         <tbody>
-                            <tr v-for="m in currentShift.cash_movements" :key="m.id" class="border-b last:border-0">
-                                <td class="py-1 text-muted-foreground">{{ new Date(m.created_at).toLocaleTimeString() }}</td>
+                            <tr
+                                v-for="m in currentShift.cash_movements"
+                                :key="m.id"
+                                class="border-b last:border-0"
+                            >
+                                <td class="text-muted-foreground py-1">
+                                    {{
+                                        new Date(
+                                            m.created_at,
+                                        ).toLocaleTimeString()
+                                    }}
+                                </td>
                                 <td class="py-1 uppercase">{{ m.type }}</td>
                                 <td class="py-1">{{ m.reason ?? '—' }}</td>
-                                <td class="py-1 text-right" :class="Number(m.amount) < 0 ? 'text-destructive' : 'text-green-600'">
+                                <td
+                                    class="py-1 text-right"
+                                    :class="
+                                        Number(m.amount) < 0
+                                            ? 'text-destructive'
+                                            : 'text-green-600'
+                                    "
+                                >
                                     {{ format(m.amount) }}
                                 </td>
                             </tr>
@@ -100,13 +133,15 @@ const cashDialog = ref(false);
             <Card v-else>
                 <CardContent class="flex items-center justify-between p-6">
                     <p class="text-muted-foreground">No open shift.</p>
-                    <Button @click="openDialog = true"><LockOpen class="mr-1 h-4 w-4" />Open Shift</Button>
+                    <Button @click="openDialog = true"
+                        ><LockOpen class="mr-1 h-4 w-4" />Open Shift</Button
+                    >
                 </CardContent>
             </Card>
 
             <div class="rounded-lg border">
                 <table class="w-full text-sm">
-                    <thead class="border-b bg-muted/50 text-left">
+                    <thead class="bg-muted/50 border-b text-left">
                         <tr>
                             <th class="p-3">#</th>
                             <th class="p-3">Cashier</th>
@@ -121,25 +156,67 @@ const cashDialog = ref(false);
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="s in shifts.data" :key="s.id" class="border-b last:border-0">
+                        <tr
+                            v-for="s in shifts.data"
+                            :key="s.id"
+                            class="border-b last:border-0"
+                        >
                             <td class="p-3 font-mono">{{ s.id }}</td>
                             <td class="p-3">{{ s.user?.name }}</td>
                             <td class="p-3">{{ s.branch?.name }}</td>
-                            <td class="p-3 text-muted-foreground">{{ new Date(s.opened_at).toLocaleString() }}</td>
-                            <td class="p-3 text-muted-foreground">{{ s.closed_at ? new Date(s.closed_at).toLocaleString() : '—' }}</td>
-                            <td class="p-3 text-right">{{ format(s.opening_cash) }}</td>
-                            <td class="p-3 text-right">{{ s.expected_cash ? format(s.expected_cash) : '—' }}</td>
-                            <td class="p-3 text-right">{{ s.actual_cash ? format(s.actual_cash) : '—' }}</td>
+                            <td class="text-muted-foreground p-3">
+                                {{ new Date(s.opened_at).toLocaleString() }}
+                            </td>
+                            <td class="text-muted-foreground p-3">
+                                {{
+                                    s.closed_at
+                                        ? new Date(s.closed_at).toLocaleString()
+                                        : '—'
+                                }}
+                            </td>
+                            <td class="p-3 text-right">
+                                {{ format(s.opening_cash) }}
+                            </td>
+                            <td class="p-3 text-right">
+                                {{
+                                    s.expected_cash
+                                        ? format(s.expected_cash)
+                                        : '—'
+                                }}
+                            </td>
+                            <td class="p-3 text-right">
+                                {{
+                                    s.actual_cash ? format(s.actual_cash) : '—'
+                                }}
+                            </td>
                             <td
                                 class="p-3 text-right font-medium"
-                                :class="s.variance && Number(s.variance) !== 0 ? 'text-destructive' : ''"
+                                :class="
+                                    s.variance && Number(s.variance) !== 0
+                                        ? 'text-destructive'
+                                        : ''
+                                "
                             >
                                 {{ s.variance ? format(s.variance) : '—' }}
                             </td>
-                            <td class="p-3"><Badge :variant="s.status === 'open' ? 'default' : 'secondary'">{{ s.status }}</Badge></td>
+                            <td class="p-3">
+                                <Badge
+                                    :variant="
+                                        s.status === 'open'
+                                            ? 'default'
+                                            : 'secondary'
+                                    "
+                                    >{{ s.status }}</Badge
+                                >
+                            </td>
                         </tr>
                         <tr v-if="!shifts.data.length">
-                            <td colspan="10" class="p-8 text-center text-muted-foreground">No shifts yet.</td>
+                            <td
+                                colspan="10"
+                                class="text-muted-foreground p-8 text-center"
+                            >
+                                No shifts yet.
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -148,57 +225,123 @@ const cashDialog = ref(false);
 
         <Dialog v-model:open="openDialog">
             <DialogContent class="max-w-sm">
-                <DialogHeader><DialogTitle>Open Shift</DialogTitle></DialogHeader>
-                <form class="space-y-3" @submit.prevent="openForm.post(open.url(), { onSuccess: () => (openDialog = false) })">
+                <DialogHeader
+                    ><DialogTitle>Open Shift</DialogTitle></DialogHeader
+                >
+                <form
+                    class="space-y-3"
+                    @submit.prevent="
+                        openForm.post(open.url(), {
+                            onSuccess: () => (openDialog = false),
+                        })
+                    "
+                >
                     <div>
                         <Label>Opening cash</Label>
-                        <Input v-model.number="openForm.opening_cash" type="number" step="0.01" min="0" />
+                        <Input
+                            v-model.number="openForm.opening_cash"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                        />
                         <InputError :message="openForm.errors.opening_cash" />
                     </div>
-                    <DialogFooter><Button type="submit" :disabled="openForm.processing">Open</Button></DialogFooter>
+                    <DialogFooter
+                        ><Button type="submit" :disabled="openForm.processing"
+                            >Open</Button
+                        ></DialogFooter
+                    >
                 </form>
             </DialogContent>
         </Dialog>
 
         <Dialog v-model:open="closeDialog">
             <DialogContent class="max-w-sm">
-                <DialogHeader><DialogTitle>Close Shift</DialogTitle></DialogHeader>
+                <DialogHeader
+                    ><DialogTitle>Close Shift</DialogTitle></DialogHeader
+                >
                 <form
                     class="space-y-3"
-                    @submit.prevent="currentShift && closeForm.post(close.url(currentShift.id), { onSuccess: () => (closeDialog = false) })"
+                    @submit.prevent="
+                        currentShift &&
+                        closeForm.post(close.url(currentShift.id), {
+                            onSuccess: () => (closeDialog = false),
+                        })
+                    "
                 >
                     <div>
                         <Label>Actual cash counted</Label>
-                        <Input v-model.number="closeForm.actual_cash" type="number" step="0.01" min="0" />
+                        <Input
+                            v-model.number="closeForm.actual_cash"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                        />
                         <InputError :message="closeForm.errors.actual_cash" />
                     </div>
                     <div>
                         <Label>Note</Label>
                         <Input v-model="closeForm.note" />
                     </div>
-                    <DialogFooter><Button type="submit" variant="destructive" :disabled="closeForm.processing">Close Shift</Button></DialogFooter>
+                    <DialogFooter
+                        ><Button
+                            type="submit"
+                            variant="destructive"
+                            :disabled="closeForm.processing"
+                            >Close Shift</Button
+                        ></DialogFooter
+                    >
                 </form>
             </DialogContent>
         </Dialog>
 
         <Dialog v-model:open="cashDialog">
             <DialogContent class="max-w-sm">
-                <DialogHeader><DialogTitle>Cash In / Out</DialogTitle></DialogHeader>
+                <DialogHeader
+                    ><DialogTitle>Cash In / Out</DialogTitle></DialogHeader
+                >
                 <form
                     class="space-y-3"
-                    @submit.prevent="currentShift && cashForm.post(cash.url(currentShift.id), { onSuccess: () => { cashDialog = false; cashForm.reset(); } })"
+                    @submit.prevent="
+                        currentShift &&
+                        cashForm.post(cash.url(currentShift.id), {
+                            onSuccess: () => {
+                                cashDialog = false;
+                                cashForm.reset();
+                            },
+                        })
+                    "
                 >
                     <div class="flex gap-2">
-                        <Button type="button" :variant="cashForm.type === 'in' ? 'default' : 'outline'" class="flex-1" @click="cashForm.type = 'in'">
+                        <Button
+                            type="button"
+                            :variant="
+                                cashForm.type === 'in' ? 'default' : 'outline'
+                            "
+                            class="flex-1"
+                            @click="cashForm.type = 'in'"
+                        >
                             <Plus class="mr-1 h-4 w-4" />Cash In
                         </Button>
-                        <Button type="button" :variant="cashForm.type === 'out' ? 'default' : 'outline'" class="flex-1" @click="cashForm.type = 'out'">
+                        <Button
+                            type="button"
+                            :variant="
+                                cashForm.type === 'out' ? 'default' : 'outline'
+                            "
+                            class="flex-1"
+                            @click="cashForm.type = 'out'"
+                        >
                             <Minus class="mr-1 h-4 w-4" />Cash Out
                         </Button>
                     </div>
                     <div>
                         <Label>Amount</Label>
-                        <Input v-model.number="cashForm.amount" type="number" step="0.01" min="0.01" />
+                        <Input
+                            v-model.number="cashForm.amount"
+                            type="number"
+                            step="0.01"
+                            min="0.01"
+                        />
                         <InputError :message="cashForm.errors.amount" />
                     </div>
                     <div>
@@ -206,7 +349,11 @@ const cashDialog = ref(false);
                         <Input v-model="cashForm.reason" />
                         <InputError :message="cashForm.errors.reason" />
                     </div>
-                    <DialogFooter><Button type="submit" :disabled="cashForm.processing">Record</Button></DialogFooter>
+                    <DialogFooter
+                        ><Button type="submit" :disabled="cashForm.processing"
+                            >Record</Button
+                        ></DialogFooter
+                    >
                 </form>
             </DialogContent>
         </Dialog>

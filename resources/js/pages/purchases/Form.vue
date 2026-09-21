@@ -20,7 +20,12 @@ import { index, store } from '@/routes/purchase-orders';
 
 const props = defineProps<{
     suppliers: { id: number; name: string }[];
-    products: { id: number; name: string; sku: string | null; cost_price: string }[];
+    products: {
+        id: number;
+        name: string;
+        sku: string | null;
+        cost_price: string;
+    }[];
 }>();
 
 const { format } = useMoney();
@@ -40,7 +45,10 @@ const form = useForm<{
 });
 
 const total = computed(() =>
-    form.items.reduce((s, i) => s + (Number(i.quantity) || 0) * (Number(i.unit_cost) || 0), 0),
+    form.items.reduce(
+        (s, i) => s + (Number(i.quantity) || 0) * (Number(i.unit_cost) || 0),
+        0,
+    ),
 );
 
 function submit() {
@@ -55,8 +63,12 @@ function submit() {
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-bold">New Purchase Order</h1>
                 <div class="flex gap-2">
-                    <Button variant="outline" as-child><Link :href="index()">Cancel</Link></Button>
-                    <Button type="submit" :disabled="form.processing">Save PO</Button>
+                    <Button variant="outline" as-child
+                        ><Link :href="index()">Cancel</Link></Button
+                    >
+                    <Button type="submit" :disabled="form.processing"
+                        >Save PO</Button
+                    >
                 </div>
             </div>
 
@@ -65,9 +77,16 @@ function submit() {
                     <div>
                         <Label>Supplier</Label>
                         <Select v-model="form.supplier_id">
-                            <SelectTrigger><SelectValue placeholder="Select supplier" /></SelectTrigger>
+                            <SelectTrigger
+                                ><SelectValue placeholder="Select supplier"
+                            /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="s in suppliers" :key="s.id" :value="String(s.id)">{{ s.name }}</SelectItem>
+                                <SelectItem
+                                    v-for="s in suppliers"
+                                    :key="s.id"
+                                    :value="String(s.id)"
+                                    >{{ s.name }}</SelectItem
+                                >
                             </SelectContent>
                         </Select>
                         <InputError :message="form.errors.supplier_id" />
@@ -100,32 +119,69 @@ function submit() {
                         type="button"
                         size="sm"
                         variant="outline"
-                        @click="form.items.push({ product_id: '', quantity: 1, unit_cost: 0 })"
+                        @click="
+                            form.items.push({
+                                product_id: '',
+                                quantity: 1,
+                                unit_cost: 0,
+                            })
+                        "
                     >
                         <Plus class="mr-1 h-4 w-4" />Add item
                     </Button>
                 </CardHeader>
                 <CardContent class="space-y-2">
-                    <div v-for="(item, i) in form.items" :key="i" class="flex items-center gap-2">
+                    <div
+                        v-for="(item, i) in form.items"
+                        :key="i"
+                        class="flex items-center gap-2"
+                    >
                         <Select v-model="item.product_id">
-                            <SelectTrigger class="flex-1"><SelectValue placeholder="Product" /></SelectTrigger>
+                            <SelectTrigger class="flex-1"
+                                ><SelectValue placeholder="Product"
+                            /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem v-for="p in products" :key="p.id" :value="String(p.id)">
+                                <SelectItem
+                                    v-for="p in products"
+                                    :key="p.id"
+                                    :value="String(p.id)"
+                                >
                                     {{ p.name }} ({{ p.sku }})
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        <Input v-model.number="item.quantity" type="number" min="0.001" step="0.001" placeholder="Qty" class="w-24" />
-                        <Input v-model.number="item.unit_cost" type="number" min="0" step="0.01" placeholder="Unit cost" class="w-32" />
+                        <Input
+                            v-model.number="item.quantity"
+                            type="number"
+                            min="0.001"
+                            step="0.001"
+                            placeholder="Qty"
+                            class="w-24"
+                        />
+                        <Input
+                            v-model.number="item.unit_cost"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="Unit cost"
+                            class="w-32"
+                        />
                         <div class="w-28 text-right text-sm font-medium">
                             {{ format(item.quantity * item.unit_cost) }}
                         </div>
-                        <Button type="button" size="icon" variant="ghost" @click="form.items.splice(i, 1)">
+                        <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            @click="form.items.splice(i, 1)"
+                        >
                             <X class="h-4 w-4" />
                         </Button>
                     </div>
                     <InputError :message="form.errors.items" />
-                    <div class="flex justify-end border-t pt-3 text-lg font-bold">
+                    <div
+                        class="flex justify-end border-t pt-3 text-lg font-bold"
+                    >
                         Total: {{ format(total) }}
                     </div>
                 </CardContent>

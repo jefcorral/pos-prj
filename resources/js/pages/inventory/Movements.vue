@@ -13,7 +13,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { index, movements } from '@/routes/inventory';
+import { index, movements as movementsRoute } from '@/routes/inventory';
 
 const props = defineProps<{
     movements: {
@@ -39,7 +39,7 @@ const to = ref(props.filters.to ?? '');
 
 watch([type, from, to], () => {
     router.get(
-        movements.url(),
+        movementsRoute.url(),
         {
             type: type.value !== 'all' ? type.value : undefined,
             from: from.value || undefined,
@@ -63,10 +63,22 @@ watch([type, from, to], () => {
 
             <div class="flex gap-3">
                 <Select v-model="type">
-                    <SelectTrigger class="w-44"><SelectValue placeholder="All types" /></SelectTrigger>
+                    <SelectTrigger class="w-44"
+                        ><SelectValue placeholder="All types"
+                    /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All types</SelectItem>
-                        <SelectItem v-for="t in ['purchase', 'sale', 'return', 'adjustment', 'transfer']" :key="t" :value="t">
+                        <SelectItem
+                            v-for="t in [
+                                'purchase',
+                                'sale',
+                                'return',
+                                'adjustment',
+                                'transfer',
+                            ]"
+                            :key="t"
+                            :value="t"
+                        >
                             {{ t }}
                         </SelectItem>
                     </SelectContent>
@@ -77,7 +89,7 @@ watch([type, from, to], () => {
 
             <div class="rounded-lg border">
                 <table class="w-full text-sm">
-                    <thead class="border-b bg-muted/50 text-left">
+                    <thead class="bg-muted/50 border-b text-left">
                         <tr>
                             <th class="p-3">Date</th>
                             <th class="p-3">Product</th>
@@ -89,27 +101,52 @@ watch([type, from, to], () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="m in movements.data" :key="m.id" class="border-b last:border-0">
-                            <td class="p-3 text-muted-foreground">
+                        <tr
+                            v-for="m in movements.data"
+                            :key="m.id"
+                            class="border-b last:border-0"
+                        >
+                            <td class="text-muted-foreground p-3">
                                 {{ new Date(m.created_at).toLocaleString() }}
                             </td>
                             <td class="p-3">
                                 {{ m.product?.name }}
-                                <span v-if="m.variant" class="text-muted-foreground">({{ m.variant.name }})</span>
+                                <span
+                                    v-if="m.variant"
+                                    class="text-muted-foreground"
+                                    >({{ m.variant.name }})</span
+                                >
                             </td>
-                            <td class="p-3"><Badge variant="outline" class="uppercase">{{ m.type }}</Badge></td>
+                            <td class="p-3">
+                                <Badge variant="outline" class="uppercase">{{
+                                    m.type
+                                }}</Badge>
+                            </td>
                             <td
                                 class="p-3 text-right font-medium"
-                                :class="Number(m.quantity) < 0 ? 'text-destructive' : 'text-green-600'"
+                                :class="
+                                    Number(m.quantity) < 0
+                                        ? 'text-destructive'
+                                        : 'text-green-600'
+                                "
                             >
                                 {{ m.quantity }}
                             </td>
-                            <td class="p-3 text-right">{{ m.quantity_after }}</td>
-                            <td class="p-3 text-muted-foreground">{{ m.note ?? '—' }}</td>
+                            <td class="p-3 text-right">
+                                {{ m.quantity_after }}
+                            </td>
+                            <td class="text-muted-foreground p-3">
+                                {{ m.note ?? '—' }}
+                            </td>
                             <td class="p-3">{{ m.user?.name ?? '—' }}</td>
                         </tr>
                         <tr v-if="!movements.data.length">
-                            <td colspan="7" class="p-8 text-center text-muted-foreground">No movements.</td>
+                            <td
+                                colspan="7"
+                                class="text-muted-foreground p-8 text-center"
+                            >
+                                No movements.
+                            </td>
                         </tr>
                     </tbody>
                 </table>

@@ -8,16 +8,18 @@ use App\Models\Category;
 use App\Models\Discount;
 use App\Models\Tax;
 use App\Models\Unit;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Inertia\Response;
 
 /**
  * Simple catalog management: categories, brands, units, taxes, discounts.
  */
 class CatalogController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('catalog.manage'), 403);
         $companyId = $request->user()->company_id;
@@ -31,7 +33,7 @@ class CatalogController extends Controller
         ]);
     }
 
-    public function storeCategory(StoreCategoryRequest $request)
+    public function storeCategory(StoreCategoryRequest $request): RedirectResponse
     {
         Category::create($request->validated() + [
             'company_id' => $request->user()->company_id,
@@ -41,7 +43,7 @@ class CatalogController extends Controller
         return back()->with('success', 'Category created.');
     }
 
-    public function updateCategory(Request $request, Category $category)
+    public function updateCategory(Request $request, Category $category): RedirectResponse
     {
         $request->validate(['name' => ['required', 'string', 'max:255']]);
         abort_if($category->company_id !== $request->user()->company_id, 404);
@@ -50,7 +52,7 @@ class CatalogController extends Controller
         return back()->with('success', 'Category updated.');
     }
 
-    public function destroyCategory(Request $request, Category $category)
+    public function destroyCategory(Request $request, Category $category): RedirectResponse
     {
         abort_if($category->company_id !== $request->user()->company_id, 404);
         $category->delete();
@@ -58,7 +60,7 @@ class CatalogController extends Controller
         return back();
     }
 
-    public function storeBrand(Request $request)
+    public function storeBrand(Request $request): RedirectResponse
     {
         $data = $request->validate(['name' => ['required', 'string', 'max:255']]);
         abort_unless($request->user()->can('catalog.manage'), 403);
@@ -67,7 +69,7 @@ class CatalogController extends Controller
         return back()->with('success', 'Brand created.');
     }
 
-    public function destroyBrand(Request $request, Brand $brand)
+    public function destroyBrand(Request $request, Brand $brand): RedirectResponse
     {
         abort_if($brand->company_id !== $request->user()->company_id, 404);
         abort_unless($request->user()->can('catalog.manage'), 403);
@@ -76,7 +78,7 @@ class CatalogController extends Controller
         return back();
     }
 
-    public function storeUnit(Request $request)
+    public function storeUnit(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
@@ -88,7 +90,7 @@ class CatalogController extends Controller
         return back()->with('success', 'Unit created.');
     }
 
-    public function storeTax(Request $request)
+    public function storeTax(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
@@ -101,7 +103,7 @@ class CatalogController extends Controller
         return back()->with('success', 'Tax created.');
     }
 
-    public function storeDiscount(Request $request)
+    public function storeDiscount(Request $request): RedirectResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],

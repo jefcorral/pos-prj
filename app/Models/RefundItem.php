@@ -11,6 +11,7 @@ class RefundItem extends Model
 
     protected $casts = ['quantity' => 'decimal:3', 'amount' => 'decimal:2'];
 
+    /** @return BelongsTo<SaleItem, $this> */
     public function saleItem(): BelongsTo
     {
         return $this->belongsTo(SaleItem::class);

@@ -80,7 +80,11 @@ function submitAdjust() {
             <div class="flex items-center justify-between">
                 <h1 class="text-xl font-bold">
                     Inventory
-                    <Badge v-if="lowStockCount" variant="destructive" class="ml-2">
+                    <Badge
+                        v-if="lowStockCount"
+                        variant="destructive"
+                        class="ml-2"
+                    >
                         {{ lowStockCount }} low stock
                     </Badge>
                 </h1>
@@ -88,7 +92,10 @@ function submitAdjust() {
                     <Button variant="outline" as-child>
                         <Link :href="movements()">Movement History</Link>
                     </Button>
-                    <Button v-if="can('inventory.adjust')" @click="adjustOpen = true">
+                    <Button
+                        v-if="can('inventory.adjust')"
+                        @click="adjustOpen = true"
+                    >
                         <Plus class="mr-1 h-4 w-4" />Adjust Stock
                     </Button>
                 </div>
@@ -96,8 +103,14 @@ function submitAdjust() {
 
             <div class="flex items-center gap-4">
                 <div class="relative w-72">
-                    <Search class="absolute top-2.5 left-3 h-4 w-4 text-muted-foreground" />
-                    <Input v-model="search" placeholder="Search product…" class="pl-9" />
+                    <Search
+                        class="text-muted-foreground absolute top-2.5 left-3 h-4 w-4"
+                    />
+                    <Input
+                        v-model="search"
+                        placeholder="Search product…"
+                        class="pl-9"
+                    />
                 </div>
                 <label class="flex items-center gap-2 text-sm">
                     <Checkbox v-model:checked="lowStock" /> Low stock only
@@ -106,7 +119,7 @@ function submitAdjust() {
 
             <div class="rounded-lg border">
                 <table class="w-full text-sm">
-                    <thead class="border-b bg-muted/50 text-left">
+                    <thead class="bg-muted/50 border-b text-left">
                         <tr>
                             <th class="p-3">Product</th>
                             <th class="p-3">SKU</th>
@@ -117,25 +130,56 @@ function submitAdjust() {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="i in inventory.data" :key="i.id" class="border-b last:border-0">
+                        <tr
+                            v-for="i in inventory.data"
+                            :key="i.id"
+                            class="border-b last:border-0"
+                        >
                             <td class="p-3 font-medium">
                                 {{ i.product?.name }}
-                                <span v-if="i.variant" class="text-muted-foreground">({{ i.variant.name }})</span>
+                                <span
+                                    v-if="i.variant"
+                                    class="text-muted-foreground"
+                                    >({{ i.variant.name }})</span
+                                >
                             </td>
-                            <td class="p-3 text-muted-foreground">{{ i.product?.sku }}</td>
-                            <td class="p-3">{{ i.product?.category?.name ?? '—' }}</td>
-                            <td class="p-3 text-right font-medium">{{ i.quantity }}</td>
-                            <td class="p-3 text-right">{{ i.product?.low_stock_threshold }}</td>
+                            <td class="text-muted-foreground p-3">
+                                {{ i.product?.sku }}
+                            </td>
+                            <td class="p-3">
+                                {{ i.product?.category?.name ?? '—' }}
+                            </td>
+                            <td class="p-3 text-right font-medium">
+                                {{ i.quantity }}
+                            </td>
+                            <td class="p-3 text-right">
+                                {{ i.product?.low_stock_threshold }}
+                            </td>
                             <td class="p-3">
                                 <Badge
-                                    :variant="Number(i.quantity) <= (i.product?.low_stock_threshold ?? 0) ? 'destructive' : 'secondary'"
+                                    :variant="
+                                        Number(i.quantity) <=
+                                        (i.product?.low_stock_threshold ?? 0)
+                                            ? 'destructive'
+                                            : 'secondary'
+                                    "
                                 >
-                                    {{ Number(i.quantity) <= (i.product?.low_stock_threshold ?? 0) ? 'Low' : 'OK' }}
+                                    {{
+                                        Number(i.quantity) <=
+                                        (i.product?.low_stock_threshold ?? 0)
+                                            ? 'Low'
+                                            : 'OK'
+                                    }}
                                 </Badge>
                             </td>
                         </tr>
                         <tr v-if="!inventory.data.length">
-                            <td colspan="6" class="p-8 text-center text-muted-foreground">No inventory records.</td>
+                            <td
+                                colspan="6"
+                                class="text-muted-foreground p-8 text-center"
+                            >
+                                No inventory records.
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -156,21 +200,34 @@ function submitAdjust() {
 
         <Dialog v-model:open="adjustOpen">
             <DialogContent class="max-w-md">
-                <DialogHeader><DialogTitle>Adjust Stock</DialogTitle></DialogHeader>
+                <DialogHeader
+                    ><DialogTitle>Adjust Stock</DialogTitle></DialogHeader
+                >
                 <form class="space-y-3" @submit.prevent="submitAdjust">
                     <div>
                         <Label>Product ID</Label>
-                        <Input v-model="adjustForm.product_id" placeholder="Product ID (see Products list)" />
+                        <Input
+                            v-model="adjustForm.product_id"
+                            placeholder="Product ID (see Products list)"
+                        />
                         <InputError :message="adjustForm.errors.product_id" />
                     </div>
                     <div>
                         <Label>Quantity (+/-)</Label>
-                        <Input v-model="adjustForm.quantity" type="number" step="0.001" placeholder="e.g. 10 or -3" />
+                        <Input
+                            v-model="adjustForm.quantity"
+                            type="number"
+                            step="0.001"
+                            placeholder="e.g. 10 or -3"
+                        />
                         <InputError :message="adjustForm.errors.quantity" />
                     </div>
                     <div>
                         <Label>Reason</Label>
-                        <Input v-model="adjustForm.reason" placeholder="e.g. Damaged, Cycle count" />
+                        <Input
+                            v-model="adjustForm.reason"
+                            placeholder="e.g. Damaged, Cycle count"
+                        />
                         <InputError :message="adjustForm.errors.reason" />
                     </div>
                     <div>
@@ -181,9 +238,17 @@ function submitAdjust() {
                         <Checkbox v-model:checked="adjustForm.allow_negative" />
                         Allow negative stock
                     </label>
-                    <InputError :message="adjustForm.errors.items" />
+                    <InputError
+                        :message="
+                            (adjustForm.errors as Record<string, string>)[
+                                'items'
+                            ]
+                        "
+                    />
                     <DialogFooter>
-                        <Button type="submit" :disabled="adjustForm.processing">Apply</Button>
+                        <Button type="submit" :disabled="adjustForm.processing"
+                            >Apply</Button
+                        >
                     </DialogFooter>
                 </form>
             </DialogContent>

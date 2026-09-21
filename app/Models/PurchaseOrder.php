@@ -26,16 +26,25 @@ class PurchaseOrder extends Model
         });
     }
 
+    /** @return BelongsTo<Branch, $this> */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    /** @return BelongsTo<Supplier, $this> */
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);
     }
 
+    /** @return HasMany<PurchaseOrderItem, $this> */
     public function items(): HasMany
     {
         return $this->hasMany(PurchaseOrderItem::class);
     }
 
+    /** @return HasMany<GoodsReceipt, $this> */
     public function receipts(): HasMany
     {
         return $this->hasMany(GoodsReceipt::class);

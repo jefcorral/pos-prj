@@ -12,6 +12,7 @@ class StoreProductRequest extends FormRequest
         return $this->user()->can('products.create');
     }
 
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
         return [

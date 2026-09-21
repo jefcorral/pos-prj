@@ -10,12 +10,14 @@ use App\Http\Requests\CashMovementRequest;
 use App\Http\Requests\CloseShiftRequest;
 use App\Http\Requests\OpenShiftRequest;
 use App\Models\CashierShift;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class ShiftController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $user = $request->user();
 
@@ -32,7 +34,7 @@ class ShiftController extends Controller
         ]);
     }
 
-    public function open(OpenShiftRequest $request, OpenCashierShift $action)
+    public function open(OpenShiftRequest $request, OpenCashierShift $action): RedirectResponse
     {
         $action->handle(
             $request->user(),
@@ -44,7 +46,7 @@ class ShiftController extends Controller
         return redirect()->route('pos.index')->with('success', 'Shift opened.');
     }
 
-    public function close(CloseShiftRequest $request, CashierShift $shift, CloseCashierShift $action)
+    public function close(CloseShiftRequest $request, CashierShift $shift, CloseCashierShift $action): RedirectResponse
     {
         abort_if(
             $shift->user_id !== $request->user()->id && $request->user()->cannot('reports.view'),
@@ -56,7 +58,7 @@ class ShiftController extends Controller
         return redirect()->route('shifts.index')->with('success', 'Shift closed.');
     }
 
-    public function cashMovement(CashMovementRequest $request, CashierShift $shift, RecordCashMovement $action)
+    public function cashMovement(CashMovementRequest $request, CashierShift $shift, RecordCashMovement $action): RedirectResponse
     {
         abort_if(
             $shift->user_id !== $request->user()->id && $request->user()->cannot('reports.view'),

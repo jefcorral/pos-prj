@@ -12,7 +12,10 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { store as storeBrand, destroy as destroyBrand } from '@/routes/catalog/brands';
+import {
+    store as storeBrand,
+    destroy as destroyBrand,
+} from '@/routes/catalog/brands';
 import {
     store as storeCategory,
     destroy as destroyCategory,
@@ -45,15 +48,39 @@ const discountForm = useForm({ name: '', type: 'percent', value: '' });
                 <CardContent class="space-y-3">
                     <form
                         class="flex gap-2"
-                        @submit.prevent="categoryForm.post(storeCategory.url(), { onSuccess: () => categoryForm.reset() })"
+                        @submit.prevent="
+                            categoryForm.post(storeCategory.url(), {
+                                onSuccess: () => categoryForm.reset(),
+                            })
+                        "
                     >
-                        <Input v-model="categoryForm.name" placeholder="New category" />
-                        <Button type="submit" :disabled="categoryForm.processing">Add</Button>
+                        <Input
+                            v-model="categoryForm.name"
+                            placeholder="New category"
+                        />
+                        <Button
+                            type="submit"
+                            :disabled="categoryForm.processing"
+                            >Add</Button
+                        >
                     </form>
-                    <div v-for="c in categories" :key="c.id" class="flex items-center justify-between text-sm">
-                        <span>{{ c.name }} <span class="text-muted-foreground">({{ c.products_count }})</span></span>
-                        <Button size="icon" variant="ghost" @click="router.delete(destroyCategory.url(c.id))">
-                            <Trash2 class="h-4 w-4 text-destructive" />
+                    <div
+                        v-for="c in categories"
+                        :key="c.id"
+                        class="flex items-center justify-between text-sm"
+                    >
+                        <span
+                            >{{ c.name }}
+                            <span class="text-muted-foreground"
+                                >({{ c.products_count }})</span
+                            ></span
+                        >
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            @click="router.delete(destroyCategory.url(c.id))"
+                        >
+                            <Trash2 class="text-destructive h-4 w-4" />
                         </Button>
                     </div>
                 </CardContent>
@@ -64,15 +91,32 @@ const discountForm = useForm({ name: '', type: 'percent', value: '' });
                 <CardContent class="space-y-3">
                     <form
                         class="flex gap-2"
-                        @submit.prevent="brandForm.post(storeBrand.url(), { onSuccess: () => brandForm.reset() })"
+                        @submit.prevent="
+                            brandForm.post(storeBrand.url(), {
+                                onSuccess: () => brandForm.reset(),
+                            })
+                        "
                     >
-                        <Input v-model="brandForm.name" placeholder="New brand" />
-                        <Button type="submit" :disabled="brandForm.processing">Add</Button>
+                        <Input
+                            v-model="brandForm.name"
+                            placeholder="New brand"
+                        />
+                        <Button type="submit" :disabled="brandForm.processing"
+                            >Add</Button
+                        >
                     </form>
-                    <div v-for="b in brands" :key="b.id" class="flex items-center justify-between text-sm">
+                    <div
+                        v-for="b in brands"
+                        :key="b.id"
+                        class="flex items-center justify-between text-sm"
+                    >
                         <span>{{ b.name }}</span>
-                        <Button size="icon" variant="ghost" @click="router.delete(destroyBrand.url(b.id))">
-                            <Trash2 class="h-4 w-4 text-destructive" />
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            @click="router.delete(destroyBrand.url(b.id))"
+                        >
+                            <Trash2 class="text-destructive h-4 w-4" />
                         </Button>
                     </div>
                 </CardContent>
@@ -83,11 +127,21 @@ const discountForm = useForm({ name: '', type: 'percent', value: '' });
                 <CardContent class="space-y-3">
                     <form
                         class="flex gap-2"
-                        @submit.prevent="unitForm.post(storeUnit.url(), { onSuccess: () => unitForm.reset() })"
+                        @submit.prevent="
+                            unitForm.post(storeUnit.url(), {
+                                onSuccess: () => unitForm.reset(),
+                            })
+                        "
                     >
                         <Input v-model="unitForm.name" placeholder="Name" />
-                        <Input v-model="unitForm.abbreviation" placeholder="Abbr." class="w-20" />
-                        <Button type="submit" :disabled="unitForm.processing">Add</Button>
+                        <Input
+                            v-model="unitForm.abbreviation"
+                            placeholder="Abbr."
+                            class="w-20"
+                        />
+                        <Button type="submit" :disabled="unitForm.processing"
+                            >Add</Button
+                        >
                     </form>
                     <div v-for="u in units" :key="u.id" class="text-sm">
                         {{ u.name }} ({{ u.abbreviation }})
@@ -100,18 +154,36 @@ const discountForm = useForm({ name: '', type: 'percent', value: '' });
                 <CardContent class="space-y-3">
                     <form
                         class="flex gap-2"
-                        @submit.prevent="taxForm.post(storeTax.url(), { onSuccess: () => taxForm.reset() })"
+                        @submit.prevent="
+                            taxForm.post(storeTax.url(), {
+                                onSuccess: () => taxForm.reset(),
+                            })
+                        "
                     >
                         <Input v-model="taxForm.name" placeholder="Name" />
-                        <Input v-model="taxForm.rate" type="number" step="0.01" placeholder="%" class="w-24" />
+                        <Input
+                            v-model="taxForm.rate"
+                            type="number"
+                            step="0.01"
+                            placeholder="%"
+                            class="w-24"
+                        />
                         <Select v-model="taxForm.type">
-                            <SelectTrigger class="w-32"><SelectValue /></SelectTrigger>
+                            <SelectTrigger class="w-32"
+                                ><SelectValue
+                            /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="exclusive">Exclusive</SelectItem>
-                                <SelectItem value="inclusive">Inclusive</SelectItem>
+                                <SelectItem value="exclusive"
+                                    >Exclusive</SelectItem
+                                >
+                                <SelectItem value="inclusive"
+                                    >Inclusive</SelectItem
+                                >
                             </SelectContent>
                         </Select>
-                        <Button type="submit" :disabled="taxForm.processing">Add</Button>
+                        <Button type="submit" :disabled="taxForm.processing"
+                            >Add</Button
+                        >
                     </form>
                     <div v-for="t in taxes" :key="t.id" class="text-sm">
                         {{ t.name }} — {{ t.rate }}% ({{ t.type }})
@@ -124,21 +196,38 @@ const discountForm = useForm({ name: '', type: 'percent', value: '' });
                 <CardContent class="space-y-3">
                     <form
                         class="flex gap-2"
-                        @submit.prevent="discountForm.post(storeDiscount.url(), { onSuccess: () => discountForm.reset() })"
+                        @submit.prevent="
+                            discountForm.post(storeDiscount.url(), {
+                                onSuccess: () => discountForm.reset(),
+                            })
+                        "
                     >
                         <Input v-model="discountForm.name" placeholder="Name" />
                         <Select v-model="discountForm.type">
-                            <SelectTrigger class="w-28"><SelectValue /></SelectTrigger>
+                            <SelectTrigger class="w-28"
+                                ><SelectValue
+                            /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="percent">%</SelectItem>
                                 <SelectItem value="fixed">Fixed</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Input v-model="discountForm.value" type="number" step="0.01" placeholder="Value" class="w-24" />
-                        <Button type="submit" :disabled="discountForm.processing">Add</Button>
+                        <Input
+                            v-model="discountForm.value"
+                            type="number"
+                            step="0.01"
+                            placeholder="Value"
+                            class="w-24"
+                        />
+                        <Button
+                            type="submit"
+                            :disabled="discountForm.processing"
+                            >Add</Button
+                        >
                     </form>
                     <div v-for="d in discounts" :key="d.id" class="text-sm">
-                        {{ d.name }} — {{ d.type === 'percent' ? `${d.value}%` : d.value }}
+                        {{ d.name }} —
+                        {{ d.type === 'percent' ? `${d.value}%` : d.value }}
                     </div>
                 </CardContent>
             </Card>

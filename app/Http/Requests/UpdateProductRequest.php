@@ -11,6 +11,7 @@ class UpdateProductRequest extends StoreProductRequest
         return $this->user()->can('products.update');
     }
 
+    /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
         $rules = parent::rules();

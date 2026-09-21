@@ -18,11 +18,13 @@ class Category extends Model
         static::creating(fn (Category $c) => $c->slug ??= str()->slug($c->name));
     }
 
+    /** @return BelongsTo<Category, $this> */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
+    /** @return HasMany<Product, $this> */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

@@ -53,7 +53,9 @@ const form = useForm({
     sku: props.product?.sku ?? '',
     barcode: props.product?.barcode ?? '',
     description: props.product?.description ?? '',
-    category_id: props.product?.category_id ? String(props.product.category_id) : 'none',
+    category_id: props.product?.category_id
+        ? String(props.product.category_id)
+        : 'none',
     brand_id: props.product?.brand_id ? String(props.product.brand_id) : 'none',
     unit_id: props.product?.unit_id ? String(props.product.unit_id) : 'none',
     tax_id: props.product?.tax_id ? String(props.product.tax_id) : 'none',
@@ -76,10 +78,9 @@ function submit() {
     }));
 
     if (props.product) {
-        payload.transform((d) => ({ ...d, _method: 'put' })).post(
-            update.url(props.product.id),
-            { forceFormData: true },
-        );
+        payload
+            .transform((d) => ({ ...d, _method: 'put' }))
+            .post(update.url(props.product.id), { forceFormData: true });
     } else {
         payload.post(store.url(), { forceFormData: true });
     }
@@ -98,7 +99,9 @@ function submit() {
                     <Button variant="outline" as-child>
                         <Link :href="index()">Cancel</Link>
                     </Button>
-                    <Button type="submit" :disabled="form.processing">Save</Button>
+                    <Button type="submit" :disabled="form.processing"
+                        >Save</Button
+                    >
                 </div>
             </div>
 
@@ -130,7 +133,12 @@ function submit() {
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="none">None</SelectItem>
-                                <SelectItem v-for="c in categories" :key="c.id" :value="String(c.id)">{{ c.name }}</SelectItem>
+                                <SelectItem
+                                    v-for="c in categories"
+                                    :key="c.id"
+                                    :value="String(c.id)"
+                                    >{{ c.name }}</SelectItem
+                                >
                             </SelectContent>
                         </Select>
                     </div>
@@ -140,7 +148,12 @@ function submit() {
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="none">None</SelectItem>
-                                <SelectItem v-for="b in brands" :key="b.id" :value="String(b.id)">{{ b.name }}</SelectItem>
+                                <SelectItem
+                                    v-for="b in brands"
+                                    :key="b.id"
+                                    :value="String(b.id)"
+                                    >{{ b.name }}</SelectItem
+                                >
                             </SelectContent>
                         </Select>
                     </div>
@@ -150,7 +163,14 @@ function submit() {
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="none">None</SelectItem>
-                                <SelectItem v-for="u in units" :key="u.id" :value="String(u.id)">{{ u.name }} ({{ u.abbreviation }})</SelectItem>
+                                <SelectItem
+                                    v-for="u in units"
+                                    :key="u.id"
+                                    :value="String(u.id)"
+                                    >{{ u.name }} ({{
+                                        u.abbreviation
+                                    }})</SelectItem
+                                >
                             </SelectContent>
                         </Select>
                     </div>
@@ -160,7 +180,12 @@ function submit() {
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="none">None</SelectItem>
-                                <SelectItem v-for="t in taxes" :key="t.id" :value="String(t.id)">{{ t.name }}</SelectItem>
+                                <SelectItem
+                                    v-for="t in taxes"
+                                    :key="t.id"
+                                    :value="String(t.id)"
+                                    >{{ t.name }}</SelectItem
+                                >
                             </SelectContent>
                         </Select>
                     </div>
@@ -172,29 +197,57 @@ function submit() {
                 <CardContent class="grid grid-cols-3 gap-4">
                     <div>
                         <Label>Cost price</Label>
-                        <Input v-model="form.cost_price" type="number" step="0.01" min="0" />
+                        <Input
+                            v-model="form.cost_price"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                        />
                         <InputError :message="form.errors.cost_price" />
                     </div>
                     <div>
                         <Label>Selling price</Label>
-                        <Input v-model="form.selling_price" type="number" step="0.01" min="0" />
+                        <Input
+                            v-model="form.selling_price"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                        />
                         <InputError :message="form.errors.selling_price" />
                     </div>
                     <div>
                         <Label>Low-stock threshold</Label>
-                        <Input v-model.number="form.low_stock_threshold" type="number" min="0" />
+                        <Input
+                            v-model.number="form.low_stock_threshold"
+                            type="number"
+                            min="0"
+                        />
                     </div>
                     <div class="flex items-center gap-2">
-                        <Checkbox v-model:checked="form.track_stock" id="track" />
+                        <Checkbox
+                            v-model:checked="form.track_stock"
+                            id="track"
+                        />
                         <Label for="track">Track stock</Label>
                     </div>
                     <div class="flex items-center gap-2">
-                        <Checkbox v-model:checked="form.is_active" id="active" />
+                        <Checkbox
+                            v-model:checked="form.is_active"
+                            id="active"
+                        />
                         <Label for="active">Active</Label>
                     </div>
                     <div>
                         <Label>Image</Label>
-                        <Input type="file" accept="image/*" @input="form.image = ($event.target as HTMLInputElement).files?.[0] ?? null" />
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            @input="
+                                form.image =
+                                    ($event.target as HTMLInputElement)
+                                        .files?.[0] ?? null
+                            "
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -206,24 +259,65 @@ function submit() {
                         type="button"
                         size="sm"
                         variant="outline"
-                        @click="form.variants.push({ name: '', sku: '', barcode: '', selling_price: '', cost_price: '' })"
+                        @click="
+                            form.variants.push({
+                                name: '',
+                                sku: '',
+                                barcode: '',
+                                selling_price: '',
+                                cost_price: '',
+                            })
+                        "
                     >
                         <Plus class="mr-1 h-4 w-4" />Add variant
                     </Button>
                 </CardHeader>
                 <CardContent class="space-y-2">
-                    <div v-for="(v, i) in form.variants" :key="i" class="flex items-center gap-2">
-                        <Input v-model="v.name" placeholder="Name (e.g. Large / Red)" class="flex-1" />
+                    <div
+                        v-for="(v, i) in form.variants"
+                        :key="i"
+                        class="flex items-center gap-2"
+                    >
+                        <Input
+                            v-model="v.name"
+                            placeholder="Name (e.g. Large / Red)"
+                            class="flex-1"
+                        />
                         <Input v-model="v.sku" placeholder="SKU" class="w-32" />
-                        <Input v-model="v.barcode" placeholder="Barcode" class="w-36" />
-                        <Input v-model="v.selling_price" type="number" step="0.01" placeholder="Price" class="w-28" />
-                        <Input v-model="v.cost_price" type="number" step="0.01" placeholder="Cost" class="w-28" />
-                        <Button type="button" size="icon" variant="ghost" @click="form.variants.splice(i, 1)">
+                        <Input
+                            v-model="v.barcode"
+                            placeholder="Barcode"
+                            class="w-36"
+                        />
+                        <Input
+                            v-model="v.selling_price"
+                            type="number"
+                            step="0.01"
+                            placeholder="Price"
+                            class="w-28"
+                        />
+                        <Input
+                            v-model="v.cost_price"
+                            type="number"
+                            step="0.01"
+                            placeholder="Cost"
+                            class="w-28"
+                        />
+                        <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            @click="form.variants.splice(i, 1)"
+                        >
                             <X class="h-4 w-4" />
                         </Button>
                     </div>
-                    <p v-if="!form.variants.length" class="text-sm text-muted-foreground">
-                        No variants. Leave price/cost empty on variants to inherit the product's.
+                    <p
+                        v-if="!form.variants.length"
+                        class="text-muted-foreground text-sm"
+                    >
+                        No variants. Leave price/cost empty on variants to
+                        inherit the product's.
                     </p>
                 </CardContent>
             </Card>

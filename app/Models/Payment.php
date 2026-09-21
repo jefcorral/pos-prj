@@ -17,6 +17,7 @@ class Payment extends Model
         'change' => 'decimal:2',
     ];
 
+    /** @return BelongsTo<Sale, $this> */
     public function sale(): BelongsTo
     {
         return $this->belongsTo(Sale::class);

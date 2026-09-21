@@ -12,9 +12,9 @@ use App\Models\ProductVariant;
 class PricingService
 {
     /**
-     * @param  array<int, array{product_id:int, product_variant_id?:int|null, quantity:float, discount?:float}>  $items
-     * @param  array{type?:string, value?:float}|null  $discount  cart-level discount
-     * @return array{items: array<int, array>, subtotal: float, discount_total: float, tax_total: float, total: float}
+     * @param  array<int, array<string, mixed>>  $items
+     * @param  array{type?: string, value?: float|int|string}|null  $discount  cart-level discount
+     * @return array{items: array<int, array<string, mixed>>, subtotal: float, discount_total: float, tax_total: float, total: float}
      */
     public function priceCart(array $items, ?array $discount = null): array
     {
@@ -22,13 +22,13 @@ class PricingService
         $subtotal = 0.0;
 
         foreach ($items as $input) {
-            $product = Product::with('tax')->findOrFail($input['product_id']);
+            $product = Product::with('tax')->whereKey($input['product_id'])->firstOrFail();
             $variant = isset($input['product_variant_id']) && $input['product_variant_id']
-                ? ProductVariant::findOrFail($input['product_variant_id'])
+                ? ProductVariant::whereKey($input['product_variant_id'])->firstOrFail()
                 : null;
 
-            $unitPrice = (float) ($variant?->selling_price ?? $product->selling_price);
-            $unitCost = (float) ($variant?->cost_price ?? $product->cost_price);
+            $unitPrice = (float) ($variant === null ? $product->selling_price : ($variant->selling_price ?? $product->selling_price));
+            $unitCost = (float) ($variant === null ? $product->cost_price : ($variant->cost_price ?? $product->cost_price));
             $quantity = (float) $input['quantity'];
             $lineDiscount = round(min((float) ($input['discount'] ?? 0), $unitPrice * $quantity), 2);
 

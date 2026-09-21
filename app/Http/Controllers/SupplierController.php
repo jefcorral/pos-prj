@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSupplierRequest;
 use App\Models\Supplier;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class SupplierController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('suppliers.manage'), 403);
 
@@ -25,14 +27,14 @@ class SupplierController extends Controller
         ]);
     }
 
-    public function store(StoreSupplierRequest $request)
+    public function store(StoreSupplierRequest $request): RedirectResponse
     {
         Supplier::create($request->validated() + ['company_id' => $request->user()->company_id]);
 
         return back()->with('success', 'Supplier created.');
     }
 
-    public function update(StoreSupplierRequest $request, Supplier $supplier)
+    public function update(StoreSupplierRequest $request, Supplier $supplier): RedirectResponse
     {
         abort_if($supplier->company_id !== $request->user()->company_id, 404);
         $supplier->update($request->validated());
@@ -40,7 +42,7 @@ class SupplierController extends Controller
         return back()->with('success', 'Supplier updated.');
     }
 
-    public function destroy(Request $request, Supplier $supplier)
+    public function destroy(Request $request, Supplier $supplier): RedirectResponse
     {
         abort_if($supplier->company_id !== $request->user()->company_id, 404);
         $supplier->delete();

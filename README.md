@@ -54,11 +54,11 @@ php artisan serve
 
 Demo credentials (from `DatabaseSeeder`):
 
-| Role    | Email             | Password |
-| ------- | ----------------- | -------- |
-| Admin   | admin@pos.test    | password |
-| Manager | manager@pos.test  | password |
-| Cashier | cashier@pos.test  | password |
+| Role    | Email            | Password |
+| ------- | ---------------- | -------- |
+| Admin   | admin@pos.test   | password |
+| Manager | manager@pos.test | password |
+| Cashier | cashier@pos.test | password |
 
 ## Docker (PostgreSQL + Redis + Nginx)
 

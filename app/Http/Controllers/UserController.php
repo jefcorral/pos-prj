@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\User;
 use App\Support\AuditLogger;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
+use Inertia\Response;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->can('users.manage'), 403);
 
@@ -26,7 +29,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         abort_unless($request->user()->can('users.manage'), 403);
 
@@ -52,7 +55,7 @@ class UserController extends Controller
         return back()->with('success', 'User created.');
     }
 
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user): RedirectResponse
     {
         abort_unless($request->user()->can('users.manage'), 403);
         abort_if($user->company_id !== $request->user()->company_id, 404);
@@ -66,7 +69,7 @@ class UserController extends Controller
             'is_active' => ['boolean'],
         ]);
 
-        $user->fill(collect($data)->except(['password', 'role'])->all());
+        $user->fill(Arr::except($data, ['password', 'role']));
         if (! empty($data['password'])) {
             $user->password = $data['password'];
         }

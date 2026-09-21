@@ -34,7 +34,11 @@ const props = defineProps<{
     inventory: {
         cost_value: number;
         retail_value: number;
-        low_stock: { quantity: string; product: { name: string } | null; branch: { name: string } | null }[];
+        low_stock: {
+            quantity: string;
+            product: { name: string } | null;
+            branch: { name: string } | null;
+        }[];
         movements: { type: string; qty: string; count: number }[];
     };
 }>();
@@ -42,7 +46,9 @@ const props = defineProps<{
 const { format } = useMoney();
 const from = ref(props.filters.from);
 const to = ref(props.filters.to);
-const branchId = ref(props.filters.branch_id ? String(props.filters.branch_id) : 'all');
+const branchId = ref(
+    props.filters.branch_id ? String(props.filters.branch_id) : 'all',
+);
 
 watch([from, to, branchId], () => {
     router.get(
@@ -69,22 +75,32 @@ watch([from, to, branchId], () => {
                     <SelectTrigger class="w-44"><SelectValue /></SelectTrigger>
                     <SelectContent>
                         <SelectItem value="all">All branches</SelectItem>
-                        <SelectItem v-for="b in branches" :key="b.id" :value="String(b.id)">{{ b.name }}</SelectItem>
+                        <SelectItem
+                            v-for="b in branches"
+                            :key="b.id"
+                            :value="String(b.id)"
+                            >{{ b.name }}</SelectItem
+                        >
                     </SelectContent>
                 </Select>
             </div>
 
             <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                <Card v-for="[label, value] in [
-                    ['Gross sales', format(summary.gross_sales)],
-                    ['Discounts', format(summary.discounts)],
-                    ['Taxes', format(summary.taxes)],
-                    ['Refunds', format(summary.refunds)],
-                    ['Net sales', format(summary.net_sales)],
-                    ['Transactions', String(summary.transactions)],
-                ]" :key="label">
+                <Card
+                    v-for="[label, value] in [
+                        ['Gross sales', format(summary.gross_sales)],
+                        ['Discounts', format(summary.discounts)],
+                        ['Taxes', format(summary.taxes)],
+                        ['Refunds', format(summary.refunds)],
+                        ['Net sales', format(summary.net_sales)],
+                        ['Transactions', String(summary.transactions)],
+                    ]"
+                    :key="label"
+                >
                     <CardContent class="p-4">
-                        <div class="text-xs text-muted-foreground">{{ label }}</div>
+                        <div class="text-muted-foreground text-xs">
+                            {{ label }}
+                        </div>
                         <div class="text-lg font-bold">{{ value }}</div>
                     </CardContent>
                 </Card>
@@ -96,13 +112,27 @@ watch([from, to, branchId], () => {
                     <CardContent>
                         <table class="w-full text-sm">
                             <tbody>
-                                <tr v-for="d in dailySales" :key="d.date" class="border-b last:border-0">
+                                <tr
+                                    v-for="d in dailySales"
+                                    :key="d.date"
+                                    class="border-b last:border-0"
+                                >
                                     <td class="py-1.5">{{ d.date }}</td>
-                                    <td class="py-1.5 text-right text-muted-foreground">{{ d.count }} txns</td>
-                                    <td class="py-1.5 text-right font-medium">{{ format(d.total) }}</td>
+                                    <td
+                                        class="text-muted-foreground py-1.5 text-right"
+                                    >
+                                        {{ d.count }} txns
+                                    </td>
+                                    <td class="py-1.5 text-right font-medium">
+                                        {{ format(d.total) }}
+                                    </td>
                                 </tr>
                                 <tr v-if="!dailySales.length">
-                                    <td class="py-4 text-center text-muted-foreground">No sales in range.</td>
+                                    <td
+                                        class="text-muted-foreground py-4 text-center"
+                                    >
+                                        No sales in range.
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -110,14 +140,28 @@ watch([from, to, branchId], () => {
                 </Card>
 
                 <Card>
-                    <CardHeader><CardTitle>By payment method</CardTitle></CardHeader>
+                    <CardHeader
+                        ><CardTitle>By payment method</CardTitle></CardHeader
+                    >
                     <CardContent>
                         <table class="w-full text-sm">
                             <tbody>
-                                <tr v-for="m in byPaymentMethod" :key="m.method" class="border-b last:border-0">
-                                    <td class="py-1.5 uppercase">{{ m.method.replace('_', ' ') }}</td>
-                                    <td class="py-1.5 text-right text-muted-foreground">{{ m.count }}</td>
-                                    <td class="py-1.5 text-right font-medium">{{ format(m.total) }}</td>
+                                <tr
+                                    v-for="m in byPaymentMethod"
+                                    :key="m.method"
+                                    class="border-b last:border-0"
+                                >
+                                    <td class="py-1.5 uppercase">
+                                        {{ m.method.replace('_', ' ') }}
+                                    </td>
+                                    <td
+                                        class="text-muted-foreground py-1.5 text-right"
+                                    >
+                                        {{ m.count }}
+                                    </td>
+                                    <td class="py-1.5 text-right font-medium">
+                                        {{ format(m.total) }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -129,10 +173,20 @@ watch([from, to, branchId], () => {
                     <CardContent>
                         <table class="w-full text-sm">
                             <tbody>
-                                <tr v-for="p in byProduct" :key="p.name" class="border-b last:border-0">
+                                <tr
+                                    v-for="p in byProduct"
+                                    :key="p.name"
+                                    class="border-b last:border-0"
+                                >
                                     <td class="py-1.5">{{ p.name }}</td>
-                                    <td class="py-1.5 text-right text-muted-foreground">{{ p.qty }}</td>
-                                    <td class="py-1.5 text-right font-medium">{{ format(p.revenue) }}</td>
+                                    <td
+                                        class="text-muted-foreground py-1.5 text-right"
+                                    >
+                                        {{ p.qty }}
+                                    </td>
+                                    <td class="py-1.5 text-right font-medium">
+                                        {{ format(p.revenue) }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -144,10 +198,20 @@ watch([from, to, branchId], () => {
                     <CardContent>
                         <table class="w-full text-sm">
                             <tbody>
-                                <tr v-for="c in byCategory" :key="c.category" class="border-b last:border-0">
+                                <tr
+                                    v-for="c in byCategory"
+                                    :key="c.category"
+                                    class="border-b last:border-0"
+                                >
                                     <td class="py-1.5">{{ c.category }}</td>
-                                    <td class="py-1.5 text-right text-muted-foreground">{{ c.qty }}</td>
-                                    <td class="py-1.5 text-right font-medium">{{ format(c.revenue) }}</td>
+                                    <td
+                                        class="text-muted-foreground py-1.5 text-right"
+                                    >
+                                        {{ c.qty }}
+                                    </td>
+                                    <td class="py-1.5 text-right font-medium">
+                                        {{ format(c.revenue) }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -159,10 +223,20 @@ watch([from, to, branchId], () => {
                     <CardContent>
                         <table class="w-full text-sm">
                             <tbody>
-                                <tr v-for="c in byCashier" :key="c.cashier" class="border-b last:border-0">
+                                <tr
+                                    v-for="c in byCashier"
+                                    :key="c.cashier"
+                                    class="border-b last:border-0"
+                                >
                                     <td class="py-1.5">{{ c.cashier }}</td>
-                                    <td class="py-1.5 text-right text-muted-foreground">{{ c.count }}</td>
-                                    <td class="py-1.5 text-right font-medium">{{ format(c.total) }}</td>
+                                    <td
+                                        class="text-muted-foreground py-1.5 text-right"
+                                    >
+                                        {{ c.count }}
+                                    </td>
+                                    <td class="py-1.5 text-right font-medium">
+                                        {{ format(c.total) }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -173,18 +247,39 @@ watch([from, to, branchId], () => {
                     <CardHeader><CardTitle>Inventory</CardTitle></CardHeader>
                     <CardContent class="space-y-3 text-sm">
                         <div class="flex justify-between">
-                            <span>Stock value (cost)</span><span class="font-medium">{{ format(inventory.cost_value) }}</span>
+                            <span>Stock value (cost)</span
+                            ><span class="font-medium">{{
+                                format(inventory.cost_value)
+                            }}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span>Stock value (retail)</span><span class="font-medium">{{ format(inventory.retail_value) }}</span>
+                            <span>Stock value (retail)</span
+                            ><span class="font-medium">{{
+                                format(inventory.retail_value)
+                            }}</span>
                         </div>
                         <div>
                             <div class="mb-1 font-semibold">Low stock</div>
-                            <div v-for="(l, i) in inventory.low_stock" :key="i" class="flex justify-between text-muted-foreground">
-                                <span>{{ l.product?.name }} ({{ l.branch?.name }})</span>
-                                <span class="text-destructive">{{ l.quantity }}</span>
+                            <div
+                                v-for="(l, i) in inventory.low_stock"
+                                :key="i"
+                                class="text-muted-foreground flex justify-between"
+                            >
+                                <span
+                                    >{{ l.product?.name }} ({{
+                                        l.branch?.name
+                                    }})</span
+                                >
+                                <span class="text-destructive">{{
+                                    l.quantity
+                                }}</span>
                             </div>
-                            <div v-if="!inventory.low_stock.length" class="text-muted-foreground">None.</div>
+                            <div
+                                v-if="!inventory.low_stock.length"
+                                class="text-muted-foreground"
+                            >
+                                None.
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
