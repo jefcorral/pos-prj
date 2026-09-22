@@ -1,8 +1,8 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/vue-starter-kit",
+    "name": "pos-system/pos",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "POS System — Point of Sale application.",
     "keywords": [
         "laravel",
         "framework"

@@ -9,12 +9,13 @@ RUN npm run build
 # ---------- Application ----------
 FROM php:8.4-fpm-alpine AS app
 
-RUN apk add --no-cache \
+RUN apk add --no-cache nginx \
     libpng-dev libjpeg-turbo-dev libwebp-dev libzip-dev icu-dev oniguruma-dev \
     postgresql-dev linux-headers $PHPIZE_DEPS \
     && docker-php-ext-install pdo pdo_pgsql pgsql intl zip opcache bcmath \
     && pecl install redis && docker-php-ext-enable redis \
-    && apk del $PHPIZE_DEPS
+    && apk del $PHPIZE_DEPS \
+    && mkdir -p /run/nginx
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -31,5 +32,8 @@ RUN composer dump-autoload --optimize \
     && mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
-EXPOSE 9000
-CMD ["php-fpm"]
+COPY docker/nginx.render.conf /etc/nginx/http.d/default.conf.template
+RUN rm -f /etc/nginx/http.d/default.conf && chmod +x docker/start.sh
+
+EXPOSE 10000
+CMD ["sh", "docker/start.sh"]
