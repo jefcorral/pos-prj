@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN WAYFINDER_COMMAND=true npm run build
 
 # ---------- Application ----------
 FROM php:8.4-fpm-alpine AS app
