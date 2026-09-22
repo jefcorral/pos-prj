@@ -6,6 +6,10 @@ sed "s/__PORT__/${PORT:-10000}/" \
     /etc/nginx/http.d/default.conf.template \
     > /etc/nginx/http.d/default.conf
 
+# SQLite demo database (ephemeral — rebuilt on every boot)
+touch database/database.sqlite
+chown www-data:www-data database/database.sqlite
+
 php artisan config:cache
 php artisan migrate --force
 php artisan db:seed --force
